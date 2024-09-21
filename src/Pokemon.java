@@ -8,7 +8,7 @@ import java.util.List;
  * 
  * @author Cassia Salmon
  */
-public record Pokemon(int ID, String name, List<String> types, double height, double weight) {
+public record Pokemon(long ID, String name, List<String> types, double height, double weight) {
     /**
      * Returns a string representation of the Pokémon.
      *
@@ -21,5 +21,15 @@ public record Pokemon(int ID, String name, List<String> types, double height, do
                " | Type: " + String.join(" & ", types) +
                " | Height: " + height +
                " | Weight: " + weight;
+    }
+
+    @Override
+    public boolean equals(Object other){
+        if(other instanceof Pokemon){
+            Pokemon otherP = (Pokemon) other;
+            return otherP.ID() == ID;
+        } else {
+            return false;
+        }
     }
 }
