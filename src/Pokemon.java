@@ -2,6 +2,8 @@ package src;
 /**
  * Represents a Pokémon with its attributes.
  * This record stores the ID, name, type, height, and weight of a Pokémon.
+ * 
+ * @author Cassia Salmon
  */
 public record Pokemon(int ID, String name, String type, double height, double weight) {
     /**
