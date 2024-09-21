@@ -1,11 +1,14 @@
 package src;
+
+import java.util.List;
+
 /**
  * Represents a Pokémon with its attributes.
  * This record stores the ID, name, type, height, and weight of a Pokémon.
  * 
  * @author Cassia Salmon
  */
-public record Pokemon(int ID, String name, String type, double height, double weight) {
+public record Pokemon(int ID, String name, List<String> types, double height, double weight) {
     /**
      * Returns a string representation of the Pokémon.
      *
@@ -15,7 +18,7 @@ public record Pokemon(int ID, String name, String type, double height, double we
     public String toString() {
         return "ID: " + ID +
                " | Name: " + name +
-               " | Type: " + type +
+               " | Type: " + String.join(" & ", types) +
                " | Height: " + height +
                " | Weight: " + weight;
     }
