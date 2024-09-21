@@ -1,4 +1,8 @@
 package src;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,8 +33,24 @@ public class Pokedex{
     public static List<Pokemon> fetchPokemon(){
         List<Pokemon> pokedex = new ArrayList<>();
         try{
+            @SuppressWarnings("deprecation")
+            URL url = new URL("https://pokeapi.co/docs/v2");
 
-        } catch (Exception e){}
+            HttpURLConnection connect = (HttpURLConnection) url.openConnection();
+            connect.setRequestMethod("GET");
+            connect.connect();
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(connect.getInputStream()));
+            StringBuilder response = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                response.append(line);
+            }
+            reader.close();
+
+        } catch (Exception e){
+            e.printStackTrace();
+        }
         return pokedex;
     }
 }
