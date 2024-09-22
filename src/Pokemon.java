@@ -8,7 +8,7 @@ import java.util.List;
  * 
  * @author Cassia Salmon
  */
-public record Pokemon(long ID, String name, List<String> types, double height, double weight) {
+public record Pokemon(long ID, String name, List<String> types, int height, int weight) {
     /**
      * Returns a string representation of the Pokémon.
      *
@@ -16,11 +16,8 @@ public record Pokemon(long ID, String name, List<String> types, double height, d
      */
     @Override
     public String toString() {
-        return "| ID: " + ID +
-               " | Name: " + name +
-               " | Type: " + String.join(" & ", types) +
-               " | Height: " + height +
-               " | Weight: " + weight + " |";
+        return String.format("| ID: %-4d | Name: %-15s | Type: %-20s | Height: %-5d | Weight: %-5d |", 
+                         ID, name, String.join(" & ", types), height, weight);
     }
 
     @Override

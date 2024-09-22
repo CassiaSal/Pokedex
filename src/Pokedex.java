@@ -16,7 +16,7 @@ import org.json.simple.parser.JSONParser;
  * @author Cassia Salmon
  */
 public class Pokedex{
-
+    private static List<Pokemon> pokedex = new ArrayList<>();
     /**
      * This method calls the fetchPokemon method to retrieve the Pokemon data
      * and prints each Pokemon's details to the console.
@@ -24,58 +24,74 @@ public class Pokedex{
      * @param args Command-line arguments (Not used in this program).
      */
     public static void main(String[] args){
-        List<Pokemon> pokedex = fetchPokemon();
+        for(int i = 1; i <= 151; i++){
+            makePokemon(i);
+        }
         pokedex.forEach(System.out::println);
     }
 
     /**
+     * Fetches the information for a specific pokemon from the PokeAPI.
+     * 
+     * @param ID the pokemon we need information from.
+     * @return the information gathered from the API.
+     */
+    public static String fetchInformation(int ID){
+        StringBuilder response = new StringBuilder();
+        try{
+        @SuppressWarnings("deprecation")
+            URL url = new URL("https://pokeapi.co/api/v2/pokemon/" + ID + "/");
+
+            HttpURLConnection connect = (HttpURLConnection) url.openConnection();
+            connect.setRequestMethod("GET");
+            connect.connect();
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(connect.getInputStream()));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                response.append(line);
+            }
+            reader.close();
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        return response.toString();
+    }
+    /**
      * Fetches the Pokemon data from the PokeAPI and returns a list of Pokemon objects.
      *
-     * @return A List of Pokemon objects representing the original 151 Pokemon.
+     * @param ID The ID number of the Pokemon we want information about.
      */
-    public static List<Pokemon> fetchPokemon(){
-        List<Pokemon> pokedex = new ArrayList<>();
+    public static void makePokemon(int ID){
         try{
-        for (int i = 1; i <= 151; i++) {
-            //int i = 1;
-                @SuppressWarnings("deprecation")
-                URL url = new URL("https://pokeapi.co/api/v2/pokemon/" + i + "/");
+            JSONParser parser = new JSONParser();
+            JSONObject jsonObject = (JSONObject) parser.parse(fetchInformation(ID));
 
-                HttpURLConnection connect = (HttpURLConnection) url.openConnection();
-                connect.setRequestMethod("GET");
-                connect.connect();
+            //Extract the information from the API
+            long id = (long) jsonObject.get("id");
+            String name = (String) jsonObject.get("name");
+            int height = ((Number) jsonObject.get("height")).intValue();
+            int weight = ((Number) jsonObject.get("weight")).intValue();
 
-                BufferedReader reader = new BufferedReader(new InputStreamReader(connect.getInputStream()));
-                StringBuilder response = new StringBuilder();
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    response.append(line);
-                }
-                reader.close();
+            // Create an ArrayList to store all types
+            ArrayList<String> types = new ArrayList<>();
 
-                JSONParser parser = new JSONParser();
-                JSONObject jsonObject = (JSONObject) parser.parse(response.toString());
+            // Extract the 'types' array from the JSON object
+            JSONArray typesArray = (JSONArray) jsonObject.get("types");
 
-                long id = (long) jsonObject.get("id");
-                String name = (String) jsonObject.get("name");
-                double height = ((Number) jsonObject.get("height")).doubleValue();
-                double weight = ((Number) jsonObject.get("weight")).doubleValue();
-
-                // Extract type from the types array
-                JSONArray typesArray = (JSONArray) jsonObject.get("types");
-                JSONObject typeObject = (JSONObject) ((JSONObject) typesArray.get(0)).get("type");
-                String type = (String) typeObject.get("name");
-                List<String> types = new ArrayList<>();
-                types.add(type);
-
-                // Create Pokemon object and add it to the pokedex
-                Pokemon pokemon = new Pokemon(id, name, types, height, weight);
-                pokedex.add(pokemon);
+            // Iterate through each type entry in the array
+            for (int i = 0; i < typesArray.size(); i++) {
+                JSONObject typeObject = (JSONObject) ((JSONObject) typesArray.get(i)).get("type");
+                String typeName = (String) typeObject.get("name");
+                types.add(typeName);  // Add the extracted type to the ArrayList
             }
-            } catch (Exception e){
-                e.printStackTrace();
-            }
+
+            // Create Pokemon object and add it to the pokedex
+            Pokemon pokemon = new Pokemon(id, name, types, height, weight);
+            pokedex.add(pokemon);
             
-        return pokedex;
+        } catch (Exception e){
+            e.printStackTrace();
+        }
     }
 }
