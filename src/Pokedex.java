@@ -4,7 +4,10 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Scanner;
+
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -28,6 +31,50 @@ public class Pokedex{
             makePokemon(i);
         }
         pokedex.forEach(System.out::println);
+
+        Scanner scanner = new Scanner(System.in);
+        boolean exit = false;
+
+        // Main menu loop
+        while(!exit){
+            System.out.println("\nMenu:  Show All  |  Sort by ID  |  Sort by Name  |  Sort by Type  |  Sort by Height  |  Sort by Weight  |  Search Pokemon  |  Exit  |");
+            System.out.print("Choose an option: ");
+
+            String choice = scanner.nextLine().trim();
+            
+            switch (choice.toLowerCase()) {
+                case "exit":
+                    exit = true;
+                    break;
+                case "show all":
+                    pokedex.forEach(System.out::println);
+                    break;
+                case "sort by id":
+                    sortById();
+                    break;
+                case "sort by name":
+                    sortByName();
+                    break;
+                case "sort by type":
+                    sortByType();
+                    break;
+                case "sort by height":
+                    sortByHeight();
+                    break;
+                case "sort by weight":
+                    sortByWeight();
+                    break;
+                case "search pokemon":
+                    System.out.print("Enter name or ID to search: ");
+                    String searchTerm = scanner.nextLine();
+                    // Add search functionality here
+                    break;
+                default:
+                    System.out.println("Invalid option, please try again.");
+                    break;
+            }
+        }
+        scanner.close();
     }
 
     /**
@@ -57,6 +104,7 @@ public class Pokedex{
         }
         return response.toString();
     }
+
     /**
      * Fetches the Pokemon data from the PokeAPI and returns a list of Pokemon objects.
      *
@@ -89,9 +137,55 @@ public class Pokedex{
             // Create Pokemon object and add it to the pokedex
             Pokemon pokemon = new Pokemon(id, name, types, height, weight);
             pokedex.add(pokemon);
-            
+
         } catch (Exception e){
             e.printStackTrace();
         }
     }
+
+    /**
+     * Sorts the list of Pokemon by their ID in ascending order and prints the sorted list.
+     */
+    public static void sortById() {
+        pokedex.sort(Comparator.comparingLong(Pokemon::ID));
+        System.out.println("Sorted by ID:");
+        pokedex.forEach(System.out::println);
+    }
+
+    /**
+     * Sorts the list of Pokemon by their name in alphabetical order and prints the sorted list.
+     */
+    public static void sortByName() {
+        pokedex.sort(Comparator.comparing(Pokemon::name));
+        System.out.println("Sorted by Name:");
+        pokedex.forEach(System.out::println);
+    }
+
+    /**
+     * Sorts the list of Pokemon by their first type in alphabetical order and prints the sorted list.
+     */
+    public static void sortByType() {
+        pokedex.sort(Comparator.comparing(s -> s.types().get(0)));
+        System.out.println("Sorted by Type:");
+        pokedex.forEach(System.out::println);
+    }
+
+    /**
+     * Sorts the list of Pokemon by their height in ascending order and prints the sorted list.
+     */
+    public static void sortByHeight() {
+        pokedex.sort(Comparator.comparingInt(Pokemon::height));
+        System.out.println("Sorted by Height:");
+        pokedex.forEach(System.out::println);
+    }
+
+    /**
+     * Sorts the list of Pokemon by their weight in ascending order and prints the sorted list.
+     */
+    public static void sortByWeight() {
+        pokedex.sort(Comparator.comparingInt(Pokemon::weight));
+        System.out.println("Sorted by Weight:");
+        pokedex.forEach(System.out::println);
+    }
+
 }
