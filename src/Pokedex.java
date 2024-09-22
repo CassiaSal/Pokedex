@@ -5,7 +5,10 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.Scanner;
 
 import org.json.simple.JSONArray;
@@ -67,7 +70,7 @@ public class Pokedex{
                 case "search pokemon":
                     System.out.print("Enter name or ID to search: ");
                     String searchTerm = scanner.nextLine();
-                    // Add search functionality here
+                    searchPokemon(searchTerm);
                     break;
                 default:
                     System.out.println("Invalid option, please try again.");
@@ -116,7 +119,6 @@ public class Pokedex{
             JSONObject jsonObject = (JSONObject) parser.parse(fetchInformation(ID));
 
             //Extract the information from the API
-            long id = (long) jsonObject.get("id");
             String name = (String) jsonObject.get("name");
             int height = ((Number) jsonObject.get("height")).intValue();
             int weight = ((Number) jsonObject.get("weight")).intValue();
@@ -135,11 +137,60 @@ public class Pokedex{
             }
 
             // Create Pokemon object and add it to the pokedex
-            Pokemon pokemon = new Pokemon(id, name, types, height, weight);
+            Pokemon pokemon = new Pokemon(ID, name, types, height, weight);
             pokedex.add(pokemon);
 
         } catch (Exception e){
             e.printStackTrace();
+        }
+    }
+
+    /**
+     * Searches the list of Pokemon by their name or ID.
+     * Prints the list of matching Pokemon or a message if no Pokemon is found.
+     *
+     * @param search The search string to match against Pokemon names or IDs.
+     */
+    public static void searchPokemon(String search) {
+        // Find the first matching Pokemon based on the search term
+        Optional<Pokemon> result = pokedex.stream()
+                                          .filter(p -> p.name().toLowerCase().contains(search.toLowerCase()) ||
+                                           String.valueOf(p.ID()).equals(search))
+                                          .findFirst(); // Get the first match
+
+        // Check if a Pokemon was found
+        if (result.isPresent()) {
+            Pokemon pokemon = result.get();
+            try{
+                JSONParser parser = new JSONParser();
+                JSONObject jsonObject = (JSONObject) parser.parse(fetchInformation(pokemon.ID()));
+                
+                //Extract Abilities
+                JSONArray abilitiesArray = (JSONArray) jsonObject.get("abilities");
+                List<String> abilities = new ArrayList<>();
+                for (Object abilityObj : abilitiesArray) {
+                    JSONObject ability = (JSONObject) ((JSONObject) abilityObj).get("ability");
+                    abilities.add((String) ability.get("name"));
+                }
+
+                // Extract base stats
+                Map<String, Integer> baseStats = new HashMap<>();
+                JSONArray statsArray = (JSONArray) jsonObject.get("stats");
+                for (Object statObj : statsArray) {
+                    JSONObject stat = (JSONObject) statObj;
+                    String statName = (String) ((JSONObject) stat.get("stat")).get("name");
+                    int baseStat = ((Number) stat.get("base_stat")).intValue();
+                    baseStats.put(statName, baseStat);
+                }
+            
+                System.out.println("Found Pokemon: " + pokemon.print(abilities, baseStats));
+
+            } catch(Exception e){
+                e.printStackTrace();
+            }
+
+        } else {
+            System.out.println("No Pokemon found with the term: " + search);
         }
     }
 
