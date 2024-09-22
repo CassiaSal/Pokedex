@@ -45,6 +45,7 @@ public class Pokedex{
 
             String choice = scanner.nextLine().trim();
             
+            //Checking which option the user has selected
             switch (choice.toLowerCase()) {
                 case "exit":
                     exit = true;
@@ -98,6 +99,7 @@ public class Pokedex{
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(connect.getInputStream()));
             String line;
+            //Reading each line of the file
             while ((line = reader.readLine()) != null) {
                 response.append(line);
             }
@@ -123,7 +125,7 @@ public class Pokedex{
             int height = ((Number) jsonObject.get("height")).intValue();
             int weight = ((Number) jsonObject.get("weight")).intValue();
 
-            // Create an ArrayList to store all types
+            // Create an ArrayList to store all the types
             ArrayList<String> types = new ArrayList<>();
 
             // Extract the 'types' array from the JSON object
@@ -162,6 +164,7 @@ public class Pokedex{
         if (result.isPresent()) {
             Pokemon pokemon = result.get();
             try{
+                //Get extra information about the pokemon
                 JSONParser parser = new JSONParser();
                 JSONObject jsonObject = (JSONObject) parser.parse(fetchInformation(pokemon.ID()));
                 
