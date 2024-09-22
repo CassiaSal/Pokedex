@@ -36,10 +36,10 @@ public class Pokedex{
     public static List<Pokemon> fetchPokemon(){
         List<Pokemon> pokedex = new ArrayList<>();
         try{
-            //for (int i = 1; i <= 151; i++) {
-            int i = 1;
+        for (int i = 1; i <= 151; i++) {
+            //int i = 1;
                 @SuppressWarnings("deprecation")
-                URL url = new URL("https://pokeapi.co/api/v2/pokemon/" + i);
+                URL url = new URL("https://pokeapi.co/api/v2/pokemon/" + i + "/");
 
                 HttpURLConnection connect = (HttpURLConnection) url.openConnection();
                 connect.setRequestMethod("GET");
@@ -71,10 +71,11 @@ public class Pokedex{
                 // Create Pokemon object and add it to the pokedex
                 Pokemon pokemon = new Pokemon(id, name, types, height, weight);
                 pokedex.add(pokemon);
-            //}
-        } catch (Exception e){
-            e.printStackTrace();
-        }
+            }
+            } catch (Exception e){
+                e.printStackTrace();
+            }
+            
         return pokedex;
     }
 }

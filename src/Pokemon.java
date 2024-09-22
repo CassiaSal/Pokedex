@@ -16,11 +16,11 @@ public record Pokemon(long ID, String name, List<String> types, double height, d
      */
     @Override
     public String toString() {
-        return "ID: " + ID +
+        return "| ID: " + ID +
                " | Name: " + name +
                " | Type: " + String.join(" & ", types) +
                " | Height: " + height +
-               " | Weight: " + weight;
+               " | Weight: " + weight + " |";
     }
 
     @Override
